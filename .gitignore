@@ -1,0 +1,11 @@
+*.exe
+*.txt
+*.vcxproj
+*.vcxproj.filters
+*.filters
+*.log
+*.obj
+*.pdb
+*.idb
+*.tlog
+*.lastbuildstate

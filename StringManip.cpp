@@ -1,7 +1,7 @@
 #include "StringManip.h"
 #include <string>
 #include <cctype>
-
+#include <iostream>
 void removeOtherChars(std::string &str) //Removes all spaces in a string
 {
 	std::string temp;
@@ -183,15 +183,37 @@ void addLeadingForSqrt(std::string &str)	//Adds leading multipliers for sqrts, I
 }
 void resetSqrtString(std::string &str)	//When outputing to user, turns $ symbol back into sqrt string
 {
-	unsigned cnt = 1;
+	size_t cnt = 1;
 	for (auto first = str.begin(), second = str.begin() + 1; second != str.end(); ++first, ++second, ++cnt)
 	{
 		if (*first == '1' && *second == '$')
 		{
-			str.erase(first, second + 1);
+			first = str.erase(first, second + 1);
+			second = first + 1;
+
 			str.insert(cnt-1, "sqrt");
-			first += 2, second += 2, cnt += 2;
+			cnt += 2;
+			first = str.begin() + cnt - 1, second = str.begin() + cnt;
+		//	first += 2;
+		//	second += 2;
+		//	cnt += 2;
+		//	Above was original code, but it was fucking invalidating the iterators
+		//	(only after I added something else mind you, so I was looking for the error in the wrong place)
+		//	So I redefine them to make them valid throughout >:(
 		}
-		
 	}
+}
+std::string::const_iterator posAfterFirstNumber(const std::string &str, std::string::iterator iter)
+{
+	for (auto iter2 = iter + 1; iter2 != str.end() && (!isdigit(*iter) || isdigit(*iter2)); ++iter, ++iter2);
+	return ++iter;
+}
+void addParenthesesSqrt(std::string &str)
+{
+	for(auto i1 = str.begin(); (i1+1) != str.end(); ++i1)
+		if (*i1 == '$' && *(i1+1) == '$')
+		{
+			str.insert(posAfterFirstNumber(str, (i1+1)), ')');
+			i1 = str.insert((i1+1), '(');
+		}
 }

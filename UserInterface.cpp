@@ -52,6 +52,7 @@ std::istream &validate(std::istream& is, std::string &str, std::ostream& os)
 
 	if (is.good())
 	{
+		addParenthesesSqrt(str);
 		addLeadingMult(str);
 		addLeadingForSqrt(str);
 	}

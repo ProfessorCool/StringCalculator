@@ -36,4 +36,6 @@ void removeSpaces(std::string &str);
 bool hasExpOrSqrt(const std::string &str);
 void addLeadingForSqrt(std::string &str);
 void resetSqrtString(std::string &str);
+std::string::const_iterator posAfterFirstNumber(const std::string &str, std::string::iterator iter);
+void addParenthesesSqrt(std::string &str);
 #endif

@@ -13,6 +13,7 @@ void calculatorLoop(std::istream &is, std::string &str, std::ostream &os = std::
 void createFile(const std::string &str);
 void createFileStructure(const std::initializer_list<const std::string> &list);
 void defineReadme();
+void endLineInput();
 void initializeFiles();
 
 #endif

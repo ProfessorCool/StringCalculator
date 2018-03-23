@@ -1,7 +1,6 @@
 #include "StringManip.h"
 #include <string>
 #include <cctype>
-#include <iostream>
 void removeOtherChars(std::string &str) //Removes all spaces in a string
 {
 	std::string temp;

@@ -5,6 +5,7 @@
 #include <cctype>
 #include <stdexcept>
 #include "FullOp.h"
+#include <sstream>
 
 extern const std::initializer_list<const std::string> fileNames;
 extern const std::string inputFileString, outputFileString, readmeFileString;
@@ -113,8 +114,32 @@ void defineReadme()
 		<< "This program also will perform math on the " << inputFileString << " file, and output results to" << outputFileString << std::endl
 		<< "Commands are separated by line." << std::flush;
 }
+void endLineInput()	//Finds if input file ends with an endline. In a roundabout way. This took way too long.
+{
+	std::ifstream is(inputFileString);
+	std::string current, last;
+	bool allEmptyLines = 1;
+	bool lastCharIsNextLine = 0;
+	while (std::getline(is, current))
+	{
+		if (!current.empty())
+			allEmptyLines = 0;
+		
+		if (is.good())
+		{
+			last = current;
+		}
+	}
+	//I have no clue how this works, but it does
+	if (!allEmptyLines && (last.empty() || !current.empty()) && !(last.empty() && current.empty()))	
+	{
+		std::ofstream os(inputFileString, std::ofstream::app);
+		os << "\n";
+	}
+}
 void initializeFiles()
 {
 	createFileStructure(fileNames);
 	defineReadme();
+	endLineInput();
 }

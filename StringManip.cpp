@@ -1,13 +1,69 @@
 #include "StringManip.h"
 #include <string>
 #include <cctype>
+#include <iostream>
+
+extern const std::initializer_list<const std::string> mathConstants;
+extern const std::vector<std::string> importantStr;
+extern const std::string pi;
+extern const std::string e;
+
+bool hasMathConstants(const std::string &str)
+{
+	for (const auto &constant : mathConstants)
+	{
+		size_t lengthC = constant.length();
+		if (!(str.length() >= lengthC))
+			continue;
+		for (size_t i = lengthC - 1; i != str.length(); ++i)
+		{
+			std::string temp = str.substr(i - lengthC + 1, lengthC);
+			if (temp == constant)
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
 void removeOtherChars(std::string &str) //Removes all spaces in a string
 {
 	std::string temp;
-	for (const auto &c : str)
+	if (!hasMathConstants(str) || str == "exit")
 	{
-		if (isalnum(c) || c == '(' || c == ')' || isOperator(c) || c == '.' || c == '^' || c == '$')
-			temp += c;
+		for (const auto &c : str)
+		{
+			if (isalnum(c) || c == '(' || c == ')' || isOperator(c) || c == '.')
+				temp += c;
+		}
+	}
+	else
+	{
+		unsigned cnt = 0;
+		for (std::string::iterator i = str.begin(); i != str.end(); ++i, ++cnt)
+		{
+			if (isdigit(*i) || *i == '(' || *i == ')' || isOperator(*i) || *i == '.')
+			{
+				temp += *i;
+				continue;
+			}
+			for (const auto &compareVal : importantStr)
+			{
+				size_t lengthC = compareVal.length();
+				if (str.length() < lengthC || cnt + lengthC > str.length())
+					continue;
+				std::string temp2(i, i + lengthC);
+				if (temp2 == compareVal)
+				{
+					temp += temp2;
+					cnt += (lengthC - 1);
+					i += (lengthC - 1);
+					break;
+				}
+
+			}
+		}
+		std::cout << temp << std::endl;
 	}
 	str = temp;
 }
@@ -72,7 +128,10 @@ void addLeadingMult(std::string &str)	// Adds leading multiplication symbol fo p
 	for (auto first = str.begin(), second = str.begin()+1; second != str.end(); ++first, ++second)
 	{
 		if (isdigit(*first) && (*second == '(') || (*first == ')' && *second == '('))
-			str.insert(second, '*');
+		{
+			second = str.insert(second, '*');	//Another iterator error that is basically the same as in resetSqrt
+			first = second - 1;					//You need to redefine the iterators to keep their validity
+		}
 	}
 }
 void removeParentheses(std::string &str)
@@ -215,4 +274,63 @@ void addParenthesesSqrt(std::string &str)
 			str.insert(posAfterFirstNumber(str, (i1+1)), ')');
 			i1 = str.insert((i1+1), '(');
 		}
+}
+void replaceStrWithStr(std::string &str, const std::string &replaced, const std::string &replacer)
+{
+	const size_t lengthR = replaced.length();
+	if (!(str.length() >= lengthR))
+		return;
+	for (size_t i = lengthR-1; i != str.length(); ++i)
+	{
+		std::string temp = str.substr(i - lengthR + 1, lengthR);
+		if (temp == replaced)
+		{
+			str.replace(i - lengthR + 1, lengthR, replacer);
+			replaceStrWithStr(str, replaced, replacer);
+			break;
+		}
+	}
+}
+void convertMathConstansts(std::string &str)
+{
+	replaceStrWithStr(str, "e", e);
+	replaceStrWithStr(str, "pi", pi);
+}
+void addParenthesesMathConstants(std::string &str)
+{
+	std::string temp;
+	unsigned cnt = 0;
+	for (std::string::iterator i = str.begin(); i != str.end(); ++i, ++cnt)
+	{
+		if (isdigit(*i) || *i == '(' || *i == ')' || isOperator(*i) || *i == '.')
+		{
+			temp += *i;
+			continue;
+		}
+		for (const auto &compareVal : mathConstants)
+		{
+			size_t lengthC = compareVal.length();
+			if (str.length() < lengthC || cnt + lengthC > str.length())
+				continue;
+			std::string temp2(i, i + lengthC);
+			if (temp2 == compareVal)
+			{
+				if (i != str.begin() && i + lengthC != str.end() && *(i - 1) == '(' && *(i + lengthC) == ')')
+				{
+					temp += temp2;
+					cnt += (lengthC - 1);
+					i += (lengthC - 1);
+				}
+				else
+				{
+					temp += "(" + temp2 + ")";
+					cnt += (lengthC - 1);
+					i += (lengthC - 1);
+				}
+				break;
+			}
+
+		}
+	}
+	str = temp;
 }

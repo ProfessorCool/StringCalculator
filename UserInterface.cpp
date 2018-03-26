@@ -7,8 +7,15 @@
 #include "FullOp.h"
 #include <sstream>
 
+
+extern const std::initializer_list<const std::string> mathConstants{ "pi", "e" };
+extern const std::vector<std::string> importantStr = { "+", "-", "*", "/", "(", ")", ".", "^", "$", "pi", "e" };
+
 extern const std::initializer_list<const std::string> fileNames;
 extern const std::string inputFileString, outputFileString, readmeFileString;
+
+extern const std::string pi = "3.14159";
+extern const std::string e = "2.71828";
 
 std::istream &validate(std::istream& is, std::string &str, std::ostream& os)
 {
@@ -16,8 +23,9 @@ std::istream &validate(std::istream& is, std::string &str, std::ostream& os)
 	convertParenth(str);
 	removeSpaces(str);
 	convertSqrt(str);
-	removeOtherChars(str);
 	toLowerCase(str);
+	removeOtherChars(str);
+
 	try
 	{
 		if (is.eof())
@@ -34,9 +42,10 @@ std::istream &validate(std::istream& is, std::string &str, std::ostream& os)
 			throw std::invalid_argument("Can't start or end with an operator");
 		if (numbParenthL(str) != numbParenthR(str))
 			throw std::invalid_argument("Must have matching number of parentheses");
-		for (const auto &i : str)
-			if (!(isdigit(i) || isOperator(i) || isParenth(i) || i == '.'))
-				throw std::invalid_argument("Invalid Input");
+		if (!hasMathConstants(str))
+			for (const auto &i : str)
+				if (!(isdigit(i) || isOperator(i) || isParenth(i) || i == '.'))
+					throw std::invalid_argument("Invalid Input");
 	}
 	catch (std::invalid_argument err)
 	{
@@ -54,6 +63,7 @@ std::istream &validate(std::istream& is, std::string &str, std::ostream& os)
 	if (is.good())
 	{
 		addParenthesesSqrt(str);
+		addParenthesesMathConstants(str);
 		addLeadingMult(str);
 		addLeadingForSqrt(str);
 	}
@@ -74,16 +84,18 @@ void calculatorLoop(std::istream &is, std::string &input, std::ostream &os)
 {
 	while (validate(is, input, os))
 	{
-		if (isInt(input) && !hasDiv(input) && !hasExpOrSqrt(input))
+		if (isInt(input) && !hasDiv(input) && !hasExpOrSqrt(input) && !hasMathConstants(input))
 		{
 			FullOp equation(input);
 			os << input << " = " << equation.execute() << std::endl;
 		}
 		else
 		{
+			std::string visInput = input;
+			convertMathConstansts(input);
 			FullOpDouble equation(input);
-			resetSqrtString(input);
-			os << input << " = " << equation.execute() << std::endl;
+			resetSqrtString(visInput);
+			os << visInput << " = " << equation.execute() << std::endl;
 		}
 	}
 }

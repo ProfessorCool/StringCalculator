@@ -2,8 +2,10 @@
 #define STRINGMANIP_H
 
 #include <string>
+#include <vector>
 
 
+bool hasMathConstants(const std::string &str);
 void removeOtherChars(std::string&); 
 void convertParenth(std::string &);
 
@@ -38,4 +40,7 @@ void addLeadingForSqrt(std::string &str);
 void resetSqrtString(std::string &str);
 std::string::const_iterator posAfterFirstNumber(const std::string &str, std::string::iterator iter);
 void addParenthesesSqrt(std::string &str);
+void replaceStrWithStr(std::string &str, const std::string &replaced, const std::string &replacer);
+void convertMathConstansts(std::string &str);
+void addParenthesesMathConstants(std::string &str);
 #endif
